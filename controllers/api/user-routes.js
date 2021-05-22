@@ -145,7 +145,7 @@ router.put('/:id', withAuth, ( req, res ) => {
  } );
 
 // DELETE /api/users/1
-router.get('/:id', ( req, res ) => {
+router.get('/:id', withAuth, ( req, res ) => {
     User.destroy( {
         where: {
             id: req.params.findOne
