@@ -1,5 +1,6 @@
 const router = require( 'express' ).Router();
 const { User, Post, Vote, Comment } = require( '../../models' );
+const withAuth = require( '../../utils/auth' );
 
 // GET /api/users
 router.get('/', ( req, res ) => {
@@ -56,7 +57,7 @@ router.get('/:id', ( req, res ) => {
 } );
 
 // POST /api/users
-router.post('/', ( req, res ) => {
+router.post('/', withAuth, ( req, res ) => {
     // expects { username: 'bbb', email: 'bbb', password: 'bbb' }
     User.create( { 
         username: req.body.username,
@@ -109,7 +110,7 @@ router.post( '/login', ( req, res ) => {
 } );
 
 // logout route to destroy cookie
-router.post( '/logout', ( req, res ) => {
+router.post( '/logout', withAuth, ( req, res ) => {
     if( req.session.loggedIn ){
         req.session.destroy( () => {
             res.status( 204 ).end();
@@ -120,7 +121,7 @@ router.post( '/logout', ( req, res ) => {
 } )
 
 // PUT /api/users/1
-router.put('/:id', ( req, res ) => { 
+router.put('/:id', withAuth, ( req, res ) => { 
     // expects { username: 'bbb', email: 'bbb', password: 'bbb' }
 
     // if req.body has exact key/val match the model, can just use req.body instead

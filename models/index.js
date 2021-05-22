@@ -12,30 +12,35 @@ User.hasMany( Post, {
     // one to many
 Post.belongsTo( User, {
     foreignKey: 'user_id',
+    onDelete: 'SET NULL'
 } );
 
     // many to many
 User.belongsToMany( Post, {
     through: Vote,
     as: 'voted_posts',
-    foreignKey: 'user_id'
+    foreignKey: 'user_id',
+    onDelete: 'SET NULL'
 } );
 
     // many to many
 Post.belongsToMany( User, {
     through: Vote,
     as: 'voted_posts',
-    foreignKey: 'post_id'
+    foreignKey: 'post_id',
+    onDelete: 'SET NULL'
 } );
 
     // one to many
 Vote.belongsTo( User, {
-    foreignKey: 'user_id'
+    foreignKey: 'user_id',
+    onDelete: 'SET NULL'
 } );
 
     // one to many
 Vote.belongsTo( Post, {
-    foreignKey: 'post_id'
+    foreignKey: 'post_id',
+    onDelete: 'SET NULL'
 } );
 
     // one to many
@@ -49,15 +54,18 @@ Post.hasMany( Vote, {
 } );
 
 Comment.belongsTo( User, {
-    foreignKey: 'user_id'
+    foreignKey: 'user_id',
+    onDelete: 'SET NULL'
 } );
 
 Comment.belongsTo( Post, {
-    foreignKey: 'post_id'
+    foreignKey: 'post_id',
+    onDelete: 'SET NULL'
 } );
 
 User.hasMany( Comment, {
-    foreignKey: 'user_id'
+    foreignKey: 'user_id',
+    onDelete: 'SET NULL'
 } );
 
 Post.hasMany( Comment, {

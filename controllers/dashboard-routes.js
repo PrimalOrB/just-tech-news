@@ -1,25 +1,27 @@
 const router = require( 'express' ).Router();
 const sequelize = require( '../config/connection' );
 const { Post, User, Comment } = require( '../models' );
+const withAuth = require( '../utils/auth' );
 
-router.get( '/', (req, res ) => {
-    console.log( req.session )
-
+router.get( '/', withAuth, ( req, res ) => {
     Post.findAll( {
+        where: {
+            user_id: req.session.user_id
+        },
         attributes: [
             'id',
             'post_url',
             'title',
             'created_at',
-            [sequelize.literal('(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)'), 'vote_count']
+            [ sequelize.literal( '(SELECT COUNT(*) FROM vote WHERE post.id = vote.post_id)' ), 'vote_count' ]
         ],
         include: [
             {
                 model: Comment,
-                attributes: ['id', 'comment_text', 'post_id', 'user_id', 'created_at'],
+                attributes: [ 'id', 'comment_text', 'post_id', 'user_id', 'created_at' ],
                 include: {
-                  model: User,
-                  attributes: ['username']
+                    model: User,
+                    attributes: [ 'username' ]
                 }
             },
             {
@@ -29,19 +31,16 @@ router.get( '/', (req, res ) => {
         ]
     } )
     .then( dbPostData => {
-        const posts = dbPostData.map( post => post.get( { plain: true } ) )
-        res.render( 'homepage', { 
-            posts,
-            loggedIn: req.session.loggedIn
-         } )
+        const posts = dbPostData.map( post => post.get( { plain: true } ) );
+        res.render( 'dashboard', { posts, loggedIn: true } )
     } )
     .catch( err => {
-        console.log( err );
-        res.status( 500 ).json( err );
-    } );
-} );
+        console.log( err )
+        res.status( 500 ).json( err )
+    } )
+} )
 
-router.get('/post/:id', (req, res) => {
+router.get( '/edit/:id', withAuth, ( req, res ) => {
     Post.findOne( {
         where: {
             id: req.params.id
@@ -74,7 +73,7 @@ router.get('/post/:id', (req, res) => {
         const post = dbPostData.get( { plain: true } )
 
             // pass to template
-        res.render( 'single-post',  { 
+        res.render( 'edit-post',  { 
             post,
             loggedIn: req.session.loggedIn
          } )
@@ -83,14 +82,6 @@ router.get('/post/:id', (req, res) => {
         console.log( err )
         res.status( 500 ).json( err )
     } )
-} );
-
-router.get( '/login', ( req, res ) => {
-    if( req.session.loggedIn ) {
-        res.redirect( '/' );
-        return
-    }
-    res.render( 'login' );
-} );
+} )
 
 module.exports = router;
