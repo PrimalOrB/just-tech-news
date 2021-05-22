@@ -35,6 +35,7 @@ Post.init(
             type: DataTypes.INTEGER,
             allowNull: false,
             primaryKey: true,
+            onDelete: 'CASCADE',
             autoIncrement: true
         },
         title: {
